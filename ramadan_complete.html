@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ramadan Countdown</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lato:wght@300;400&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #f0d080;
+      --bg-dark: #050d1a;
+      --bg-mid: #0c1e35;
+      --text: #e8dfc8;
+      --accent: #3a7bd5;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      color: var(--text);
+      font-family: 'Lato', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Stars background */
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--dur) ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from {
+        opacity: 0.1;
+        transform: scale(1);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1.4);
+      }
+    }
+
+    /* Moon */
+    .moon {
+      position: fixed;
+      top: 40px;
+      right: 80px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #f5e08a, #c8a84b);
+      box-shadow: 0 0 40px 10px rgba(201, 168, 76, 0.35), 0 0 80px 20px rgba(201, 168, 76, 0.15);
+      z-index: 1;
+      animation: moonGlow 4s ease-in-out infinite alternate;
+    }
+
+    .moon::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 12px;
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: transparent;
+      box-shadow: -14px -4px 0 2px var(--bg-dark);
+    }
+
+    @keyframes moonGlow {
+      from {
+        box-shadow: 0 0 40px 10px rgba(201, 168, 76, 0.35), 0 0 80px 20px rgba(201, 168, 76, 0.15);
+      }
+
+      to {
+        box-shadow: 0 0 60px 20px rgba(201, 168, 76, 0.5), 0 0 120px 40px rgba(201, 168, 76, 0.2);
+      }
+    }
+
+    /* Main container */
+    .container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 20px;
+      width: 100%;
+      max-width: 750px;
+      animation: fadeIn 1.5s ease both;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Scrollbar styling */
+    .container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .container::-webkit-scrollbar-thumb {
+      background: rgba(201, 168, 76, 0.3);
+      border-radius: 10px;
+    }
+
+    .container::-webkit-scrollbar-thumb:hover {
+      background: rgba(201, 168, 76, 0.5);
+    }
+
+    /* Top controls */
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .icon-btn {
+      background: rgba(201, 168, 76, 0.1);
+      border: 1px solid rgba(201, 168, 76, 0.3);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      color: var(--gold);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .icon-btn:hover {
+      background: rgba(201, 168, 76, 0.2);
+      transform: scale(1.1);
+    }
+
+    .icon-btn.active {
+      background: rgba(201, 168, 76, 0.3);
+    }
+
+    /* Tab navigation */
+    .tab-nav {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(201, 168, 76, 0.2);
+      color: rgba(232, 223, 200, 0.6);
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--gold), #a07830);
+      border-color: var(--gold);
+      color: #050d1a;
+    }
+
+    /* Arabic greeting */
+    .arabic {
+      font-size: 2rem;
+      color: var(--gold);
+      letter-spacing: 4px;
+      margin-bottom: 4px;
+      text-shadow: 0 0 20px rgba(201, 168, 76, 0.5);
+    }
+
+    .title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.4rem, 5vw, 2.4rem);
+      color: var(--gold-light);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    /* Hijri date */
+    .hijri {
+      font-size: 0.85rem;
+      color: rgba(232, 223, 200, 0.6);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    /* Mode indicator */
+    .mode-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), #1a4a8a);
+      color: white;
+      padding: 6px 20px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      box-shadow: 0 0 20px rgba(58, 123, 213, 0.4);
+    }
+
+    .mode-badge.iftar {
+      background: linear-gradient(135deg, #c06020, #8a3010);
+      box-shadow: 0 0 20px rgba(192, 96, 32, 0.4);
+    }
+
+    /* Countdown label */
+    .countdown-label {
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(232, 223, 200, 0.5);
+      margin-bottom: 10px;
+    }
+
+    /* Countdown display */
+    .countdown {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .time-block {
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(201, 168, 76, 0.2);
+      border-radius: 16px;
+      padding: 18px 24px;
+      min-width: 90px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: transform 0.3s;
+    }
+
+    .time-block:hover {
+      transform: translateY(-4px);
+    }
+
+    .time-num {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 2.8rem;
+      color: var(--gold-light);
+      line-height: 1;
+      text-shadow: 0 0 20px rgba(240, 208, 128, 0.4);
+    }
+
+    .time-label {
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(232, 223, 200, 0.5);
+      margin-top: 6px;
+    }
+
+    /* Prayer times row */
+    .prayer-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .prayer-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(201, 168, 76, 0.15);
+      border-radius: 30px;
+      padding: 8px 18px;
+      font-size: 0.78rem;
+      color: rgba(232, 223, 200, 0.7);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .prayer-pill:hover {
+      border-color: var(--gold);
+      transform: scale(1.05);
+    }
+
+    .prayer-pill span.name {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .prayer-pill.active {
+      border-color: var(--gold);
+      background: rgba(201, 168, 76, 0.1);
+      color: var(--text);
+    }
+
+    /* Dua section */
+    .dua-container {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+      border: 1px solid rgba(201, 168, 76, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .dua-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.2rem;
+      color: var(--gold);
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+
+    .dua-arabic {
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.8;
+      direction: rtl;
+      font-weight: 500;
+    }
+
+    .dua-english {
+      font-style: italic;
+      color: rgba(232, 223, 200, 0.8);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    .dua-reference {
+      font-size: 0.7rem;
+      color: rgba(201, 168, 76, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .dua-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .dua-nav button {
+      background: rgba(201, 168, 76, 0.1);
+      border: 1px solid rgba(201, 168, 76, 0.3);
+      color: var(--gold);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.3s;
+    }
+
+    .dua-nav button:hover {
+      background: rgba(201, 168, 76, 0.2);
+    }
+
+    /* Quote */
+    .quote-box {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border-left: 3px solid var(--gold);
+      border-radius: 0 12px 12px 0;
+      padding: 16px 20px;
+      margin: 0 auto 28px;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    .quote-text {
+      font-style: italic;
+      font-size: 0.9rem;
+      color: rgba(232, 223, 200, 0.85);
+      line-height: 1.7;
+    }
+
+    .quote-src {
+      font-size: 0.72rem;
+      color: var(--gold);
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    /* Prayer times alert */
+    .prayer-alert {
+      background: linear-gradient(135deg, rgba(192, 96, 32, 0.2), rgba(192, 96, 32, 0.1));
+      border: 1px solid rgba(192, 96, 32, 0.4);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #ffb366;
+    }
+
+    .prayer-alert.active {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.9;
+        transform: scale(1.02);
+      }
+    }
+
+    /* Location input */
+    .location-section {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .location-section input {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(201, 168, 76, 0.25);
+      border-radius: 30px;
+      color: var(--text);
+      padding: 8px 18px;
+      font-size: 0.85rem;
+      outline: none;
+      width: 200px;
+    }
+
+    .location-section input:focus {
+      border-color: var(--gold);
+    }
+
+    .location-section button {
+      background: linear-gradient(135deg, var(--gold), #a07830);
+      border: none;
+      border-radius: 30px;
+      color: #050d1a;
+      padding: 8px 20px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .city-name {
+      font-size: 0.75rem;
+      color: rgba(232, 223, 200, 0.45);
+      margin-top: 6px;
+    }
+
+    .creator {
+      margin-top: 24px;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: rgba(201, 168, 76, 0.5);
+      text-transform: uppercase;
+    }
+
+    /* Divider */
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 24px;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto 28px;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: rgba(232, 223, 200, 0.45);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      border-radius: 4px;
+      transition: width 1s linear;
+    }
+
+    /* Hidden tabs */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--gold), #a07830);
+      color: #050d1a;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+      max-width: 300px;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .moon {
+        width: 60px;
+        height: 60px;
+        top: 20px;
+        right: 20px;
+      }
+
+      .tab-nav {
+        font-size: 0.65rem;
+        gap: 4px;
+      }
+
+      .tab-btn {
+        padding: 6px 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="stars" id="stars"></div>
+  <div class="moon"></div>
+
+  <div class="container">
+    <div class="top-controls">
+      <button class="icon-btn" onclick="toggleSound()" id="soundBtn" title="Toggle sound">🔊</button>
+      <div></div>
+      <button class="icon-btn" onclick="toggleNotifications()" id="notifBtn" title="Toggle notifications">🔔</button>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab(event, 'main')">Main</button>
+      <button class="tab-btn" onclick="switchTab(event, 'duas')">Duas</button>
+      <button class="tab-btn" onclick="switchTab(event, 'prayers')">Prayers</button>
+    </div>
+
+    <!-- MAIN TAB -->
+    <div id="main" class="tab-content active">
+      <div class="arabic">رمضان كريم</div>
+      <div class="title">Ramadan Countdown</div>
+      <div class="hijri" id="hijriDate">Loading date...</div>
+
+      <div class="divider"></div>
+
+      <div id="prayerAlert"></div>
+
+      <div class="mode-badge" id="modeBadge">⏳ Calculating...</div>
+      <div class="countdown-label" id="countdownLabel">Time Remaining</div>
+
+      <div class="countdown">
+        <div class="time-block">
+          <div class="time-num" id="hours">--</div>
+          <div class="time-label">Hours</div>
+        </div>
+        <div class="time-block">
+          <div class="time-num" id="minutes">--</div>
+          <div class="time-label">Minutes</div>
+        </div>
+        <div class="time-block">
+          <div class="time-num" id="seconds">--</div>
+          <div class="time-label">Seconds</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-labels">
+          <span id="startLabel">Suhoor</span>
+          <span id="endLabel">Iftar</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="prayer-row" id="prayerRow"></div>
+
+      <div class="quote-box" id="quoteBox">
+        <div class="quote-text" id="quoteText">Loading...</div>
+        <div class="quote-src" id="quoteSrc"></div>
+      </div>
+
+      <div class="location-section">
+        <input type="text" id="cityInput" placeholder="Enter your city..." />
+        <button onclick="updateCity()">Update</button>
+      </div>
+      <div class="city-name" id="cityDisplay"></div>
+    </div>
+
+    <!-- DUAS TAB -->
+    <div id="duas" class="tab-content">
+      <div class="title" style="font-size: 1.8rem; margin-bottom: 20px;">Ramadan Duas</div>
+      <div class="dua-container">
+        <div class="dua-title" id="duaTitle">Dua for Fasting</div>
+        <div class="dua-arabic" id="duaArabic">Loading...</div>
+        <div class="dua-english" id="duaEnglish">Loading...</div>
+        <div class="dua-reference" id="duaRef"></div>
+        <div class="dua-nav">
+          <button onclick="previousDua()">← Previous</button>
+          <button onclick="randomDua()">Random</button>
+          <button onclick="nextDua()">Next →</button>
+        </div>
+        <button
+          style="margin-top: 12px; background: rgba(201,168,76,0.2); border: 1px solid rgba(201,168,76,0.3); color: var(--gold); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 700;"
+          onclick="playDuaAudio()">🔊 Listen</button>
+      </div>
+    </div>
+
+    <!-- PRAYERS TAB -->
+    <div id="prayers" class="tab-content">
+      <div class="title" style="font-size: 1.8rem; margin-bottom: 20px;">Prayer Times Today</div>
+      <div id="prayersList"></div>
+    </div>
+
+    <div class="creator">✨ Created by Habib Desanya</div>
+  </div>
+
+  <script>
+    // ---- Global State ----
+    let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+    let notificationsEnabled = localStorage.getItem('notificationsEnabled') !== 'false';
+    let currentDuaIndex = 0;
+    let lastPrayerNotified = null;
+
+    // ---- Duas Database ----
+    const duas = [
+      {
+        title: "Dua for Fasting",
+        arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِرَحْمَتِكَ الَّتِي وَسِعَتْ كُلَّ شَيْءٍ أَنْ تَغْفِرَ لِي",
+        english: "O Allah, I ask You by Your mercy which encompasses all things, to forgive me.",
+        ref: "Dua of the Fasting Person"
+      },
+      {
+        title: "Dua for Iftar",
+        arabic: "اللَّهُمَّ إِنِّي لَكَ صُمْتُ وَبِكَ آمَنْتُ وَعَلَيْكَ تَوَكَّلْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ",
+        english: "O Allah, for You I have fasted, in You I believe, upon You I rely, and with Your provision I break my fast.",
+        ref: "Dua of Breaking the Fast"
+      },
+      {
+        title: "Dua for Suhoor",
+        arabic: "نَوَيْتُ أَنْ أَصُومَ صَوْمَ رَمَضَانَ مِنَ الْفَجْرِ إِلَى الْمَغْرِبِ وَاَلْقَصْدُ قَرِيبٌ وَالْغِنَاءُ فِيهِ خَفِيفٌ",
+        english: "I intend to fast the month of Ramadan for the sake of Allah, from dawn until sunset.",
+        ref: "Intention for Fasting"
+      },
+      {
+        title: "Dua in Ramadan",
+        arabic: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+        english: "Our Lord, give us good in this world and good in the hereafter, and save us from the punishment of the Fire.",
+        ref: "Quran 2:201"
+      },
+      {
+        title: "Dua of the Fasting Person",
+        arabic: "اللَّهُمَّ اجْعَلْ صِيَامِي فِيهِ صِيَامَ الصَّائِمِينَ وَقِيَامِي فِيهِ قِيَامَ الْقَائِمِينَ",
+        english: "O Allah, make my fasting in it (Ramadan) the fasting of the sincere, and my standing in prayer the standing of the devoted.",
+        ref: "Dua for Ramadan"
+      },
+      {
+        title: "Dua for Laylat Al-Qadr",
+        arabic: "اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
+        english: "O Allah, You are Pardoning and love pardoning, so pardon me.",
+        ref: "Dua for Laylat Al-Qadr"
+      },
+      {
+        title: "Dua for Seeking Forgiveness",
+        arabic: "أَسْتَغْفِرُ اللَّهَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ",
+        english: "I seek forgiveness from Allah, there is no deity except Him, the Ever-Living, the Sustainer of existence, and I repent to Him.",
+        ref: "Dua of Seeking Forgiveness"
+      },
+      {
+        title: "Dua for Blessings",
+        arabic: "اللَّهُمَّ بَارِكْ لَنَا فِي رَمَضَانَ وَارْزُقْنَا التَّقْوَى",
+        english: "O Allah, bless us in Ramadan and grant us piety.",
+        ref: "Dua for Ramadan Blessings"
+      }
+    ];
+
+    const quotes = [
+      { text: "Indeed, with hardship will be ease.", src: "Quran 94:6" },
+      { text: "Whoever does not give up false speech and acting upon it, Allah has no need of his giving up food and drink.", src: "Hadith — Bukhari" },
+      { text: "Fasting is a shield. When one of you is fasting, let him not speak obscenely or behave ignorantly.", src: "Hadith — Bukhari & Muslim" },
+      { text: "The fasting person has two moments of joy: when he breaks his fast and when he meets his Lord.", src: "Hadith — Bukhari" },
+      { text: "Ramadan is the month in which the Quran was revealed as a guide for humanity.", src: "Quran 2:185" },
+      { text: "O you who believe, fasting is prescribed for you as it was prescribed for those before you, so that you may be mindful of Allah.", src: "Quran 2:183" },
+    ];
+
+    // ---- Stars ----
+    const starsEl = document.getElementById('stars');
+    for (let i = 0; i < 150; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random() * 100}%; left:${Math.random() * 100}%;
+      --dur:${Math.random() * 3 + 2}s;
+      animation-delay:${Math.random() * 4}s;
+    `;
+      starsEl.appendChild(s);
+    }
+
+    // ---- Quotes & Duas ----
+    function displayQuote() {
+      const q = quotes[new Date().getDate() % quotes.length];
+      document.getElementById('quoteText').textContent = `"${q.text}"`;
+      document.getElementById('quoteSrc').textContent = `— ${q.src}`;
+    }
+
+    function displayDua() {
+      const dua = duas[currentDuaIndex];
+      document.getElementById('duaTitle').textContent = dua.title;
+      document.getElementById('duaArabic').textContent = dua.arabic;
+      document.getElementById('duaEnglish').textContent = dua.english;
+      document.getElementById('duaRef').textContent = `— ${dua.ref}`;
+    }
+
+    function nextDua() {
+      currentDuaIndex = (currentDuaIndex + 1) % duas.length;
+      displayDua();
+    }
+
+    function previousDua() {
+      currentDuaIndex = (currentDuaIndex - 1 + duas.length) % duas.length;
+      displayDua();
+    }
+
+    function randomDua() {
+      currentDuaIndex = Math.floor(Math.random() * duas.length);
+      displayDua();
+    }
+
+    function playDuaAudio() {
+      if (!soundEnabled) {
+        showNotification('🔊 Sound is disabled');
+        return;
+      }
+      const dua = duas[currentDuaIndex];
+      // Using Web Speech API for TTS
+      const utterance = new SpeechSynthesisUtterance(dua.english);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // ---- Hijri Date ----
+    function getHijriDate() {
+      try {
+        const d = new Intl.DateTimeFormat('en-TN-u-ca-islamic', {
+          day: 'numeric', month: 'long', year: 'numeric'
+        }).format(new Date());
+        return d;
+      } catch (e) { return ''; }
+    }
+
+    // ---- Prayer Times ----
+    let cityLat = 6.5244;
+    let cityLng = 3.3792;
+    let cityName = 'Lagos, Nigeria';
+
+    function toRad(d) { return d * Math.PI / 180; }
+    function toDeg(r) { return r * 180 / Math.PI; }
+
+    function julianDay(date) {
+      const y = date.getFullYear(), m = date.getMonth() + 1, d = date.getDate();
+      return 367 * y - Math.floor(7 * (y + Math.floor((m + 9) / 12)) / 4) + Math.floor(275 * m / 9) + d + 1721013.5;
+    }
+
+    function getSunTimes(lat, lng, date) {
+      const jd = julianDay(date);
+      const n = jd - 2451545.0;
+      const L = (280.46 + 0.9856474 * n) % 360;
+      const g = toRad((357.528 + 0.9856003 * n) % 360);
+      const lambda = toRad(L + 1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g));
+      const sinDec = Math.sin(toRad(23.439)) * Math.sin(lambda);
+      const dec = Math.asin(sinDec);
+      const eqTime = 4 * (L - toDeg(Math.atan2(Math.cos(toRad(23.439)) * Math.sin(lambda), Math.cos(lambda))));
+
+      function hourAngle(angle) {
+        const cosHA = (Math.sin(toRad(angle)) - Math.sin(toRad(lat)) * sinDec) /
+          (Math.cos(toRad(lat)) * Math.cos(dec));
+        if (Math.abs(cosHA) > 1) return null;
+        return toDeg(Math.acos(cosHA));
+      }
+
+      const tz = -date.getTimezoneOffset() / 60;
+      const noon = 12 - lng / 15 - eqTime / 60 + tz;
+
+      const haFajr = hourAngle(-18);
+      const haSunrise = hourAngle(-0.833);
+      const haAsr = toDeg(Math.atan(1 / (Math.tan(Math.abs(toRad(lat) - dec)) + 1)));
+
+      const fajrT = haFajr !== null ? noon - haFajr / 15 : noon - 1.5;
+      const sunriseT = haSunrise !== null ? noon - haSunrise / 15 : noon - 0.1;
+      const dhuhrT = noon + 0.017;
+      const asrSimple = noon + (toDeg(Math.acos(
+        (Math.sin(Math.atan(1 / (1 + Math.tan(Math.abs(toRad(lat) - dec))))) -
+          sinDec * Math.sin(toRad(lat))) / (Math.cos(dec) * Math.cos(toRad(lat)))
+      ))) / 15;
+      const maghribT = 19.0;
+      const ishaT = haFajr !== null ? noon + haFajr / 15 : noon + 1.5;
+
+      return {
+        Fajr: fajrT,
+        Suhoor: fajrT - 0.083,
+        Sunrise: sunriseT,
+        Dhuhr: dhuhrT,
+        Asr: asrSimple,
+        Maghrib: maghribT,
+        Isha: ishaT,
+      };
+    }
+
+    function decToTime(dec) {
+      if (!dec || isNaN(dec)) return '??:??';
+      let h = Math.floor(dec) % 24;
+      if (h < 0) h += 24;
+      const m = Math.round((dec % 1) * 60);
+      return `${String(h).padStart(2, '0')}:${String(m < 0 ? 0 : m).padStart(2, '0')}`;
+    }
+
+    function decToDate(dec, baseDate) {
+      const d = new Date(baseDate);
+      let h = Math.floor(dec) % 24;
+      if (h < 0) h += 24;
+      const m = Math.round((dec % 1) * 60);
+      d.setHours(h, m < 0 ? 0 : m, 0, 0);
+      return d;
+    }
+
+    function pad(n) { return String(Math.max(0, Math.floor(n))).padStart(2, '0'); }
+
+    function renderPrayers(times) {
+      const now = new Date();
+      const nowH = now.getHours() + now.getMinutes() / 60;
+      const prayers = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+      const row = document.getElementById('prayerRow');
+      row.innerHTML = '';
+
+      let upcomingPrayer = null;
+      prayers.forEach(name => {
+        const t = times[name];
+        const pill = document.createElement('div');
+        const tH = t % 24;
+        const isActive = Math.abs(tH - nowH) < 0.5;
+        pill.className = 'prayer-pill' + (isActive ? ' active' : '');
+        pill.innerHTML = `<span class="name">${name}</span><span>${decToTime(t)}</span>`;
+        pill.onclick = () => playAdhan(name);
+        row.appendChild(pill);
+
+        if (!upcomingPrayer && tH > nowH) {
+          upcomingPrayer = { name, time: decToDate(t, now) };
+        }
+      });
+
+      // Show alert for upcoming prayer
+      const alertDiv = document.getElementById('prayerAlert');
+      if (upcomingPrayer) {
+        const minutesUntil = Math.round((upcomingPrayer.time - now) / 60000);
+        if (minutesUntil <= 30 && minutesUntil > 0) {
+          alertDiv.className = 'prayer-alert active';
+          alertDiv.innerHTML = `⏰ ${upcomingPrayer.name} prayer in ${minutesUntil} minutes!`;
+        } else {
+          alertDiv.style.display = 'none';
+        }
+      }
+    }
+
+    function renderPrayersList(times) {
+      const now = new Date();
+      const prayers = [
+        { name: 'Suhoor', time: times.Suhoor, desc: 'Last time to eat' },
+        { name: 'Fajr', time: times.Fajr, desc: 'Dawn prayer' },
+        { name: 'Sunrise', time: times.Sunrise, desc: 'Start of fast' },
+        { name: 'Dhuhr', time: times.Dhuhr, desc: 'Midday prayer' },
+        { name: 'Asr', time: times.Asr, desc: 'Afternoon prayer' },
+        { name: 'Maghrib', time: times.Maghrib, desc: 'Break your fast' },
+        { name: 'Isha', time: times.Isha, desc: 'Night prayer' },
+      ];
+
+      const list = document.getElementById('prayersList');
+      list.innerHTML = prayers.map(p => {
+        const prayerDate = decToDate(p.time, now);
+        const passed = now > prayerDate;
+        return `
+        <div style="background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 14px; margin-bottom: 10px; text-align: left; ${passed ? 'opacity: 0.5;' : ''}">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="color: var(--gold); font-weight: 700; font-size: 0.95rem;">${p.name}</div>
+              <div style="color: rgba(232,223,200,0.6); font-size: 0.8rem;">${p.desc}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="color: var(--gold-light); font-size: 1.1rem; font-weight: 700;">${decToTime(p.time)}</div>
+              <button onclick="playAdhan('${p.name}')" style="background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); color: var(--gold); padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; margin-top: 4px;">🔊 Adhan</button>
+            </div>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+
+    // ---- Adhan Audio ----
+    function playAdhan(prayerName) {
+      if (!soundEnabled) {
+        showNotification('🔊 Sound is disabled');
+        return;
+      }
+      showNotification(`🕌 Adhan for ${prayerName}`);
+
+      // Using Web Speech API for basic Adhan announcement
+      const utterance = new SpeechSynthesisUtterance(`Adhan for ${prayerName} prayer`);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.8;
+      utterance.pitch = 1.2;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // ---- Tab Switching ----
+    function switchTab(event, tabName) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // ---- Sound & Notifications ----
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem('soundEnabled', soundEnabled);
+      document.getElementById('soundBtn').classList.toggle('active');
+      showNotification(soundEnabled ? '🔊 Sound enabled' : '🔇 Sound disabled');
+    }
+
+    function toggleNotifications() {
+      notificationsEnabled = !notificationsEnabled;
+      localStorage.setItem('notificationsEnabled', notificationsEnabled);
+      document.getElementById('notifBtn').classList.toggle('active');
+      showNotification(notificationsEnabled ? '🔔 Notifications enabled' : '🔕 Notifications disabled');
+    }
+
+    function showNotification(message) {
+      const notif = document.createElement('div');
+      notif.className = 'notification';
+      notif.textContent = message;
+      document.body.appendChild(notif);
+      setTimeout(() => notif.remove(), 3000);
+    }
+
+    // ---- Main Update ----
+    function updateCountdown() {
+      const now = new Date();
+      const times = getSunTimes(cityLat, cityLng, now);
+
+      renderPrayers(times);
+      renderPrayersList(times);
+
+      const hijri = getHijriDate();
+      document.getElementById('hijriDate').textContent = hijri || new Date().toDateString();
+
+      const suhoorDate = decToDate(times.Suhoor, now);
+      const iftarDate = decToDate(times.Maghrib, now);
+
+      const badge = document.getElementById('modeBadge');
+      const label = document.getElementById('countdownLabel');
+      const startLbl = document.getElementById('startLabel');
+      const endLbl = document.getElementById('endLabel');
+      const fill = document.getElementById('progressFill');
+
+      let target, mode, totalMs, startMs;
+
+      if (now < suhoorDate) {
+        target = suhoorDate;
+        mode = 'suhoor';
+      } else if (now < iftarDate) {
+        target = iftarDate;
+        mode = 'iftar';
+      } else {
+        const tmr = new Date(now);
+        tmr.setDate(tmr.getDate() + 1);
+        const tmrTimes = getSunTimes(cityLat, cityLng, tmr);
+        target = decToDate(tmrTimes.Suhoor, tmr);
+        mode = 'suhoor-tmr';
+      }
+
+      const diff = target - now;
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+
+      document.getElementById('hours').textContent = pad(h);
+      document.getElementById('minutes').textContent = pad(m);
+      document.getElementById('seconds').textContent = pad(s);
+
+      if (mode === 'iftar') {
+        badge.textContent = '🌙 Fasting — Countdown to Iftar';
+        badge.className = 'mode-badge iftar';
+        label.textContent = `Iftar at ${decToTime(times.Maghrib)}`;
+        startLbl.textContent = 'Suhoor Ended';
+        endLbl.textContent = 'Iftar';
+        const suhoorEnd = decToDate(times.Fajr, now);
+        totalMs = iftarDate - suhoorEnd;
+        startMs = now - suhoorEnd;
+      } else {
+        badge.textContent = '🍽️ Suhoor Time';
+        badge.className = 'mode-badge';
+        label.textContent = mode === 'suhoor-tmr' ? 'Until Tomorrow\'s Suhoor' : 'Until Suhoor Ends';
+        startLbl.textContent = 'Iftar';
+        endLbl.textContent = 'Suhoor';
+        totalMs = diff + 1;
+        startMs = 1;
+      }
+
+      const pct = Math.min(100, Math.max(0, (startMs / totalMs) * 100));
+      fill.style.width = pct + '%';
+    }
+
+    // ---- City Update ----
+    async function updateCity() {
+      const input = document.getElementById('cityInput').value.trim();
+      if (!input) return;
+      try {
+        const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(input)}&count=1`);
+        const data = await r.json();
+        if (data.results && data.results.length > 0) {
+          const res = data.results[0];
+          cityLat = res.latitude;
+          cityLng = res.longitude;
+          cityName = res.name + (res.country ? ', ' + res.country : '');
+          document.getElementById('cityDisplay').textContent = '📍 ' + cityName;
+          updateCountdown();
+          showNotification(`📍 Updated to ${cityName}`);
+        } else {
+          document.getElementById('cityDisplay').textContent = '❌ City not found.';
+        }
+      } catch (e) {
+        document.getElementById('cityDisplay').textContent = '⚠️ Connection error.';
+      }
+    }
+
+    document.getElementById('cityInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') updateCity();
+    });
+
+    // ---- Initialize ----
+    displayQuote();
+    displayDua();
+    document.getElementById('cityDisplay').textContent = '📍 ' + cityName;
+    if (soundEnabled) document.getElementById('soundBtn').classList.add('active');
+    if (notificationsEnabled) document.getElementById('notifBtn').classList.add('active');
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+
+</html>
